@@ -1,0 +1,13 @@
+
+Runtime/Dev/**/*
+Runtime/Dev.meta
+**/*.excalidraw
+**/*.excalidraw.meta
+**/*.blend
+**/*.blend.meta
+**/*.blend1
+**/*.blend1.meta
+notes.md
+notes.md.meta
+todo.md
+todo.md.meta
