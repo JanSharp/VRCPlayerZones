@@ -1,0 +1,23 @@
+{
+    "name": "JanSharp.PlayerZones",
+    "rootNamespace": "",
+    "references": [
+        "JanSharp.Common",
+        "JanSharp.Lockstep",
+        "JanSharp.GenericValueEditor",
+        "JanSharp.PlayerData",
+        "UdonSharp.Runtime",
+        "VRC.SDK3",
+        "VRC.SDKBase",
+        "VRC.Udon"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

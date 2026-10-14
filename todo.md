@@ -1,0 +1,293 @@
+
+- [x] Show by permission scripts in players backend page
+- [x] Change how the odd and even row images get enabled and disabled
+- [x] Prevent changing the last player which has permissions to edit permissions to a group which does not have those permissions
+- [x] Use ~~a selectable or a toggle~~ CrossFadeAlpha for the highlight shown while the permission group popup is shown
+- [x] When losing permissions to edit one of the columns in the player backend, but that was the active sort order, change sort order to the player name
+- [ ] Maybe actually just disable (make non interactable) the 3 columns that are tied to permissions in the players backend page rather than hiding them, except for the delete column that would go hidden
+- [ ] Should there be an indicator for when a player is online or offline in the backend page outside of the delete button being greyed out?
+- [x] Check permissions for all interactions in the players backend manager, when running the IAs. Raise events in case an action got ignored so external latency states can be reset
+- [x] reduce the amount of raycast targets
+- [x] experiment with sub canvases? but idk how they would even help with scrolling requiring layout changes? Unless the entire content can be a sub canvas? Experiment. - See [ui-performance](ui-performance.md)
+- [x] genuinely consider making custom layout elements... why the actual hell is that something I have to consider? Like how. I just don't understand how Unity's components can be so terrible. Or are they? Apparently I cannot trust whatever people say on the internet about UI's anyway because Canvas Groups most certainly have measurable - noticeable even - performance impact when used to disable and hide UI. But if layout groups really are using GetComponent every time, and I can actually look at source code, probably, to double check that myself, then yea actually horrifying
+  - Don't. At most make "build time layout groups" for any static layout. They only affect performance when layout elements have to mark layout systems as dirty, which is primarily only problematic when enabling or disabling large hierarchies. Only bother optimizing this if there are noticeable and bothersome lag spikes
+- [x] test having 89 players and then importing the 4 players again, idk how 2 out of 4 of the show by permission resolvers ended up not working for just 1 row in that case. very random
+  - I tried, could not reproduce. And it won't matter for this case again once all of those scripts got removed in favor of the page script handling all of the enabling and disabling
+- [x] most likely remove all of the show by permission scripts from the rows and instead have the page script handle the enabling and disabling. It's just all around more performant that way, both creation of rows as well as changing permissions
+- [x] experiment with enabling and disabling elements as you scroll through the list, only having the visible ones enabled basically
+- [x] ~~do not use auto size unless necessary~~ sure, but don't fret it too much. It would only reduce lag spikes such as when changing permissions, outside of that it hardly matters which causes layout rebuilds which changes the size of text rects which make text rebuild
+- [x] could disable all Caret game objects as they are useless in VRChat and just eat cull performance
+  - find them after instantiating a row, since they get created OnEnable and don't exist at build time (or scene load generically)
+- [x] test if disabling the root canvas stops all performance drain including moving - it does not, culling cost persists
+- [x] test if moving causes layout set dirty calls made by images and text (graphics) - it does not
+- [x] clamp the velocity of the scroll rect, even though it only matters for desktop since in VR it's constantly rebuilding batches anyway
+- [x] highlight the row that is about to be deleted behind the popup
+- [x] auto delete old read GM requests
+- [x] respect permissions in GM requests manager
+- [x] maybe do raise the latency events alongside the game state events in GM requests manager, making listening to just latency events inform a script about all actions taken, without needing to listen to the game state events too
+- [x] move the show page by permission script into the gm requests buttons module
+- [x] why are the request gm buttons no longer visible after making those scripts themselves also be permission resolvers, thus having 2 resolvers on the same object? What is going on - a permission system race condition that got introduced due to lockstep on init now being able to be spread out across frames
+- [x] importing and opening the players backend page leaves rows disabled sometimes, like it didn't recalculate which ones should be visible
+- [x] check every frame if the viewport rect height has changed, which also removes the hack of setting the scroll rect position to 1 initially
+- [x] update which rows are visible every time one gets added or removed... but like isn't it already doing that? why was a row invisible after others got deleted? And it didn't even show up when scrolling?! - probably most likely fixed, not sure if the observation here of it not updating even after scrolling was correct
+- [x] update names in the gm requests list whenever overridden display name or character names change
+- [x] make urgent highlight image not fade in and out, it changing position instantly and then playing the fade looks stupid, just how the toggle checkmark looked stupid
+- [x] add a main highlight color image for active gm requests
+- [x] remove the canvas group, keeping read gm requests the same full opacity, just with the urgent or main color highlights disabled
+- [x] sort read requests the other way around timing wise, newest to the top
+- [x] why do the gm request toggles look like they have a different color than the page toggles?
+- [x] make regular gm requests red after x minutes
+- [ ] try out non elastic scroll rects
+- [x] update gm requests names upon import
+- [x] make buttons aware of all open requests by the local player
+- [x] hud for the gm requests
+- [x] do something with gm requests where the requesting player left, either visually or idk
+- [x] deleting the second last row makes the last row invisible until that row goes out of view and into view again
+- [x] rename the RequestGMButtons prefab to GMRequestButtons
+- [x] very most likely change gm requests page to make calls to an external teleports manager
+- [ ] maybe, probably, make the count slightly smaller for GM requests HUD to make it feel less squished into that spot. Though would be good to test in VR first
+- [x] add the crazy ideas for requesting GM without opening the menu, see gm-menu-requirements.md in menu-system
+  - [ ] should there be a key for this in desktop? with the RP_MENU_DEBUG define set you can hold R right now, but that'd of course not be the case in production
+- [x] How to truly prevent locking yourself out of permissions to edit permissions
+  - editing the permission values themselves could lock you out
+    - [x] disallow removing the edit permissions permission if the actively edited group is the group you yourself are in
+  - deleting a permission group could lock you out
+    - [x] disallow deleting the permission group you are in if the default group does not have the edit permissions permission
+  - deleting the last player data which had the necessary permissions could lock you out
+    - [x] disallow deleting the last offline player data which is in a group that has the edit permissions permission
+  - changing the last player data's group could lock you out
+    - [x] disallow changing your permission group to a group which does not have the edit permissions permission
+- [x] think about combining the edit permissions permission and the change permission group permission
+- [x] voice range settings UI
+- [x] voice range HUD
+- [x] voice range in world indicator
+- [x] voice range AudioManager integration
+- [x] which ones of these layout elements actually need layout priority 2? something with the input fields afaik
+- [x] change GMRequestsHUD to use Time.deltaTime instead
+- [x] make default visualization type for hud and in world defined through inspector
+- [x] maybe some kind of flash or indicator on the hud for when a new GM request came in. Or like a plus sign that pops up from the hud and moves upwards before fading away
+- [x] close the menu when hitting the request GM button
+- [x] show mask settings toggle group sets flags for any definitions that do not have a toggle to off rather than using the appropriate default value
+- [x] tweak voice range shader properties or shader itself, likely to make it less obtrusive
+- [x] getting shader compile error on publish:
+```
+Shader error in 'RP Menu/Voice Range Sphere': undeclared identifier 'samplerdepthTexture' at line 136 (on d3d11)
+
+Compiling Subshader: 0, Pass: , Vertex program with STEREO_INSTANCING_ON
+Platform defines: SHADER_API_DESKTOP UNITY_ENABLE_DETAIL_NORMALMAP UNITY_ENABLE_REFLECTION_BUFFERS UNITY_LIGHTMAP_FULL_HDR UNITY_LIGHT_PROBE_PROXY_VOLUME UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BLENDING UNITY_SPECCUBE_BOX_PROJECTION UNITY_USE_DITHER_MASK_FOR_ALPHABLENDED_SHADOWS
+Disabled keywords: INSTANCING_ON SHADER_API_GLES30 UNITY_ASTC_NORMALMAP_ENCODING UNITY_COLORSPACE_GAMMA UNITY_FRAMEBUFFER_FETCH_AVAILABLE UNITY_HALF_PRECISION_FRAGMENT_SHADER_REGISTERS UNITY_HARDWARE_TIER1 UNITY_HARDWARE_TIER2 UNITY_HARDWARE_TIER3 UNITY_LIGHTMAP_DLDR_ENCODING UNITY_LIGHTMAP_RGBM_ENCODING UNITY_METAL_SHADOWS_USE_POINT_FILTERING UNITY_NO_DXT5nm UNITY_NO_FULL_STANDARD_SHADER UNITY_NO_SCREENSPACE_SHADOWS UNITY_PBS_USE_BRDF2 UNITY_PBS_USE_BRDF3 UNITY_PRETRANSFORM_TO_DISPLAY_ORIENTATION UNITY_UNIFIED_SHADER_PRECISION_MODEL UNITY_VIRTUAL_TEXTURING
+UnityEditor.BuildPipeline:BuildAssetBundles (string,UnityEditor.AssetBundleBuild[],UnityEditor.BuildAssetBundleOptions,UnityEditor.BuildTarget)
+VRC.SDK3.Editor.Builder.VRCWorldAssetExporter:ExportCurrentSceneResource (bool,System.Action`1<string>,System.Action`1<object>)
+VRC.SDK3.Editor.Builder.VRCWorldBuilder:ExportSceneResourceInternal (bool)
+VRC.SDK3.Editor.Builder.VRCWorldBuilder:ExportSceneResource ()
+VRC.SDK3.Editor.VRCSdkControlPanelWorldBuilder/<Build>d__149:MoveNext () (at ./Packages/com.vrchat.worlds/Editor/VRCSDK/SDK3/VRCSdkControlPanelWorldBuilder.cs:2567)
+UnityEngine.UnitySynchronizationContext:ExecuteTasks ()
+```
+- NOTE: HUD text does not draw above opaque geometry while images do. I believe that fixing that would require making a copy of the text mesh pro shaders just to change ZTest to Always, or maybe using legacy text instead. Pretty sure the former would work, though it is very annoying, and did not try the latter
+- NOTE: the RPMenu prefab should not contain the generated permission rows already. I mean its fine if it does, but it shouldn't. So when making a release, make sure to hit the build menu button beforehand
+- [x] proofread all of the permission page related code
+- [x] importing the 1000 players, the loading UI closed too soon, it was still running OnImportFinishingUp. This could be a lockstep with the IsImporting flag or a menu system bug
+- [x] the cross fade alpha api for UI graphics is unreliable when objects get disabled. Either don't use it at all - and use like a selectable instead for example - or find all the edge cases and handle them
+- [x] check if permission groups are deleted already when getting the created event
+- [x] change popup buttons to use the correct layout element style
+- [x] change all texts which get dimmed (disabled) through selectables to use the tintable style
+- [x] the ShowAdjacentPopups script should not be a permission resolver, it should be other scripts telling it which popups are shown or not. Case and point, there's 2 permissions for each of those popups, local and global, so it cannot even handle the current use case right now
+- [ ] maybe close the save selection group popup upon closing the menu in VR
+- [ ] maybe close the load selection group popup upon closing the menu in VR, but only if none of the buttons are marked for deletion
+- [x] change the postfix for selection groups labels to put the \[G\] before the (#)
+- [x] make sure the "no dynamic data" texts have proper styling
+- [x] disable load selection button when there are no selection groups
+- [x] close ~~save~~ (wrong, that one was already doing it) and load selection popups when losing permissions to do anything in them
+- [ ] is the fact that the save dynamic data name input field only gets cleared when sending an add IA a feature or a bug? For context closing the popup due to clicking an overwrite button, clicking outside of the popup or due to an import starting all do not clear the input field
+- [x] when having delete permissions but not load permissions, disable the load button in the list
+- [x] always sort actual character names first in the players backend page and players page
+- [x] reused rows do not respect permissions
+- [x] why does having 1000 players lag spike when opening and closing the menu? They are all inactive game objects, that should not cause any lag. Is there something else running on open and close? - see [ui-performance](ui-performance.md) about OnCanvasHierarchyChanged
+- [ ] what does `Lighting On` in a shader even do?
+- [x] rename GMRequestsHUD prefab to GMRequestsHUDController
+- [x] spread out the order strings for all the AddHUDElement, and maybe actually expose them to the inspector
+- [x] loading in with a second player shows nothing in the players list, players backend does show some players, but not all
+- [ ] fade in and out animations for summon indicators on the summoner side
+- [x] reset voice mode to default when a player goes offline. As funny as it is to have it remember, with the discrepancy in timing from when other players perceive a player as online until that player has finished loading for them to even know what mode they are in it's honestly effectively a bug
+- [x] disable the save as local and save as global buttons for dynamic data when the current name in the input field is already used
+- [ ] maybe make gm request text color match icon color
+- [x] change gm request hud color to orange/amber when there's a larger number piling up
+- [ ] maybe add a lockstep master preference slider to the settings page, probably with its own permission to be viewable and usable
+- [x] probably add undo redo teleport buttons to GM requests page
+  - [ ] test how that single line styling looks
+- [x] actually add the "ignore show page by permission in children" script
+  - [x] add a show page by permission script to every module
+  - [x] make sure the prefab overrides that deleted those existing show page by permission scripts get undone
+- [x] probably combine all of the local dynamic data permissions (so selection groups and custom locations) into one permission rather than 4 separate ones. It is nonsensical for them to be split
+- [x] ~~maybe add a permission to only allow deleting global dynamic data "owned" by the local player (the one who created or overwrite it)~~ no likely best not
+- [x] make default page setting actually do something
+- [x] show the open close key bind and menu position settings in VR only
+  - [x] add show in VR only and show in desktop only scripts
+- [ ] close the menu when clicking a location teleport button?
+- [ ] close the menu when clicking a custom location teleport button?
+  - [ ] could make these a setting... but what's a good default and would the default be good enough for a setting to be overkill anyway?
+- [x] maybe add info text stating that the list is empty in the GM requests list and teleport locations list
+- [x] add a PageContent object to every page, both for consistency and to reduce the depth of continuous layout groups
+- [x] add a ShowPageByPermission script to the settings that are supposed to be visible at all times, simply leave the conditions empty
+  - [x] remove the ignore ShowPageByPermission in children from the settings page in doing so
+- [ ] maybe try implementing "sliding" support to the segmented slider, effectively starting a drag on one of the segments and it changing the value so long as the pointer is held down
+- [x] disabled segmented slider must disable interactable on the buttons, or ignore the click event... that'd actually be easier
+- [x] probably add lines between the buttons in the toolbar for the players list
+- [x] Q E support for desktop no clip
+- [x] Shift support for desktop no clip
+- [x] maybe a little smooth in and tiny smooth out when staring and stopping moving in no clip in desktop, or even in VR too
+  - [x] add option to toggle input smoothing of no clip, for testing and maybe it'll become permanent
+- [x] maybe keep a collider under the player while they are using no clip to have grounded be true, if possible
+- [ ] make PR for sylan's no clip to also keep track of the position within the play space, it is so weird without it
+- [x] test the play space offset tracking with full body, I guess - it works
+- [x] test grounded with and without the collider under you - grounded is true while teleporting with the fake ground under you, at least in desktop. Note that in this test velocity was left untouched and gravity strength at 1
+- [x] ~~maybe make it so that when holding jump, moving forward and back actually moves you up and down in no clip~~ sounds like a bad idea
+- [x] or maybe treat holding jump in no clip like shift on desktop
+- [ ] maybe make the RPMenu prefab invisible in the scene by default
+- [x] must increase the radius of the local player capsule, it appears bigger than what I have tested previously when it comes to what it collides with, which is likely different than ray casts hitting it. It's a very weird kind of collider, these capsule controllers
+- [x] make voice range sphere even less obtrusive, maybe change the opacity based on the viewing angle... we don't have the normal vector, never mind. Still make it less obtrusive
+- [x] apparently putting the fake ground onto the local player collider actually does not make the player stand on it... even though in the project settings it shows that it should. Probably a discrepancy in the sdk and actual VRC. Will have to keep the collider always active and near the player to be able to check for collisions reliably
+  - first of all, it says in the project settings that local player does not collide with itself, so that's just wrong
+  - however it is true that adding the local player layer to the included layers on the collider does not make the local player actually be able to stand on it - apparently this is wrong
+    - [x] apparently using the include layer local player setting on the collider does make it collide with the local player when the object the collider is on is itself on the local player layer, so I guess I could change that again and maybe that makes it possible to use the check physics cast rather than overlap
+  - but whatever, lastly that last statement of having to keep the collider active and near the player, no, that is stupid. The script now checks for nearby colliders, capped at 2, and it simply ignores the fake ground collider if it is in that list of up to 2 colliders
+- [ ] maybe add a question mark button at the right of the no clip row which gives a popup of info for how no clip works. Basically like the help page would, but right there rather than separated
+- [x] figure out if there is anything that can be done to prevent this weird state of the player's avatar being suck constantly moving, where cancelling no clip clearly makes you move to the side - not using teleports and just having the collider under the player while standing still and not colliding with anything is probably the best we can do for this
+- [x] add options for different no clip movement modes. Both for testing and maybe some will be permanent options
+  - [x] velocity - collides, not actually no clip
+  - [x] combo - velocity while not in colliders, otherwise teleport
+  - [x] teleport - always use teleport
+- [x] add option for how standing still in no clip should be handled. Velocity or fake ground
+  - [x] must set gravity scale to 0 for the velocity approach to work here
+    - [ ] make some kind of manager for local player settings such as their gravity strength. Could also put it on the teleport manager
+- [x] rename no clip manager to no clip settings manager
+- [x] the IsNoClipActive flag has nothing to do with settings. Remove it from the settings manager
+- [x] design GM proxy 3d models - good enough for now
+  - [ ] maybe, probably, try and see what they look like with the frames being white and just the inner part being colored
+- [x] do styling for the GM proxy spawn buttons
+- [ ] decide on GM proxy colors
+- [ ] use filamented shaders for GM proxies... would be best if this was configurable by the user of the package easily actually
+- [x] make sure to make it easy for users of the package to change the proxy items
+- [x] automatically add the gm proxy entity prototype into the scene
+- [x] add separate permission to view who spawned a gm proxy
+- [ ] players with the "view gm proxy spawned by" permission should be allowed to steal gm proxies from other players, not because of stealing specifically but in order to be able to get the interaction text to show up which shows who created the entity. Either that or there needs to be another way to view who created the proxy. Another way would honestly be cleaner than abusing the stealing logic (said stealing logic doesn't even exist yet in the custom pickups and interacts for the record)
+- [x] add a clear button (just an X) on the right of the input field for gm proxies
+- [x] when using teleport for movement in no clip, not setting velocity means it ends up having velocity which makes the player's animator perform associated animations
+  - [ ] test this in VR
+- [x] remove the spacing between the gm proxy display name input field and the clear button
+- [x] maybe disable the teleport to button for the local player row
+- [x] import export page
+  - [x] styling
+  - [x] implementation
+  - [x] when losing export game state permissions, stop autosaving, and resume autosaving if it was enabled and permission is regained
+  - [x] autosave timer does not update, and is shown/hidden incorrectly hierarchy wise
+  - [x] delete the game states UI
+  - [x] make sure the default state of the tabs is properly enforced/set in OnMenuManagerStart
+  - [x] put character limit on export name, matching GameStatesUI
+  - [x] flip the order of import and export game state permissions
+  - [x] add the gs info to export and autosave, over in lockstep and then here
+  - [x] add comments stating how there's a ton of copy paste from the GameStatesUI
+  - [ ] consider adding the input prevention to the generic value editors since they can be scrollable thus should block UI open close inputs. Though whether that input consuming feature as a whole is a good idea is still up in the air
+  - [ ] make generic value editor styling match
+  - [ ] think about import export options profiles
+- [ ] items page
+  - [x] styling
+  - [x] custom keyboard
+    - [ ] maybe add holding down keys to repeat their input, especially backspace, if that is doable with the EventTrigger component
+    - [x] add num pad
+  - [x] filterable list
+    - [x] search query logic
+  - [ ] category support for entities, somehow
+  - [x] favorites
+  - [x] when importing favorites, ignore entities which are no longer items
+- [ ] help page
+- [x] ui sounds
+- [ ] maybe have the menu side bar expanded/collapsed state be part of import export
+- [ ] maybe have the expanded/collapsed state of the keyboard on the items page
+- [x] when hiding and showing the import tab the widgets must match what gets created in OnImportSerializedTextValueChangedDelayed
+- [ ] mention sylan's gm menu in the readme. While I took no code nor assets from there, I did take notable amount of inspiration
+- [x] do something about the order of operations for switching tabs and tabs active state changing on the save page, such that the animations of generic value editor ui values changing don't end up playing
+- [x] add import export support to favorite players
+- [x] add import export support to player selection groups
+- [x] add import export support to custom locations
+- [x] reset the small medium large toggles for gm proxies as well as items to their default when leaving the page
+  - [ ] maybe also when closing and opening the menu... only maybe. that'd be inconsistent with the one other thing that resets currently, that being the save page
+  - [ ] bigger maybe also reset when spawning an item/gm proxy
+- [ ] maybe reset the GM proxy name when spawning
+- [ ] switch away from abusing Selectable for animations and do cross fading on the graphic through script. Selectable does eat performance when changing parents, which is what happens when switching pages, contributing to that lag spike (~180ms total lag spike with 1089 players, switching to and from the players backend page, ~21ms of which is Selectable. Granted that includes the Button, Toggle and TMPInputField as they derive from Selectable, but still)
+- [x] close item spawn confirmation popup when switching pages
+- [ ] make last open the default for desktop and hide the option, as otherwise using input fields is a really bad experience or even breaks the process as pages run logic upon no longer being the active page
+- [ ] no clip is too fast for the voice range sphere. Making the box bigger is a band aid, it'd be better to somehow force the positioning of the voice range sphere to run after no clip
+- [x] when player data gets deleted the labels in gm requests do not update
+  - [x] might also apply to undo/redo teleport - nope
+  - [x] also applies to gm proxies
+- [x] importing global custom locations fails trying to read player data due to load order. Missing GS dependency
+- [x] importing without keeping unnecessary player data errors in item favorites manager because importedPlayers contains null
+- [x] anything having references to core player data can very most likely die on imports now due to player data no longer being guaranteed to be exported or imported
+- [x] PerPlayerMenuSettings behave as though they were global, one player changes their, everybody is affected
+- [x] NoClipSettingsPlayerData behaves as though they were global, one player changes their, everybody is affected
+- [x] newly created rows in the players list appear selected when missing player selection permission
+- [x] GM request type change breaks the latency state for the player changing request type if that GM request also gets marked as read at around the same time - it was not related to simultaneous actions like that at all... the ids were simply desynced due to nextRequestId not being sent to late joiners
+- [x] creating 10+ local custom locations and deleting them all made the list show as empty without the empty info text and it is still openable. There was likely some custom locations related input action from another player that ran during the process of marking these locations for deletion
+- [x] maybe add a toggle to toggle the active state of no clip in the menu without the need to double jump
+  - [x] maybe make the whole "double jump" info label area also clickable to toggle that toggle, it feels natural
+- [x] maybe add an option to the no clip UI to choose between no clip and flying (using velocity, which does collide). When doing so make flying the default
+- [ ] maybe add a fourth option for the voice range in world indicator to only show briefly on change and then fade out
+  - [ ] also for the HUD?
+- [x] maybe highlight matching characters for searches on the items page
+- [x] make GM Proxy colors more muted, de-saturated
+- [x] maybe revamp GM proxy color selection, either a wheel (buttons arranged in a flower pattern) or a hue bar (simply colorful boxes next to each other), total of around 12 colors
+- [x] maybe change GM request size selection, segmented slider with bars building up in size
+  - [x] make the items size selection match
+- [x] change GM request treat as urgent to show as orange rather than red
+- [x] change GM request treat as urgent timer to 5 minutes
+- [x] remove GM request responder HUD showing as orange when 5 requests are unread
+- [x] should proximity sort ignore/bypass favorites
+- [x] should selection sort ignore/bypass favorites
+- [x] change "redo TP" to "last player TP"
+- [x] change "undo TP" to "revert TP" and make it behave like Sylan's Undo TP. Basically behave like undo, except that undo itself also pushes a new action, if we pretend to treat it like an undo stack. This more closely behaves like git revert
+- [ ] note that text can show as invisible on desktop and the workaround is to enter and exit fullscreen
+- [x] rename "local" dynamic data to "personal" in the UI
+- [x] load dynamic data buttons don't have sound
+- [x] prevent player data from getting deleted if that player is in any selection groups
+- [ ] it would also be preferable if any player data referenced by GM requests is prevented from getting deleted, both requester and responder
+- [x] make last player TP button not interactable but still show the tooltip when hovered when that last player is currently offline
+- [x] summon indicators are broken. summon some players, instantly try to summon some again, once the first one finishes, indicators for the new one disappear. Cancelling and trying to summon again does not show the correct amount of indicators anymore
+- [x] in GMRequestsPage OnPlayerDataDeleted RPPlayerData does not exist anymore at this point, also check in gm proxies manager
+- [ ] missing an in menu method to delete items
+  - [ ] maybe have a toggle in the gm tools page which puts a sphere on your hand which while holding the trigger deletes items it collides with
+  - [ ] maybe have a delete held item button
+- [x] add a flying permission separate from the no clip permission
+- [x] maybe combine no clip enabled and flying type options into one row in the UI - none, flying, no clip
+- [x] maybe change no clip label in UI to one word
+- [x] fix losing no clip permissions not deactivating no clip
+- [ ] see if there is anything to be done about the menu jittering while moving around in no clip
+- [ ] use material property blocks for gm proxies
+  - [ ] check if filamented supports property block instancing on its color property
+  - [ ] check the same for unity default shaders for the fun of it
+- [ ] size options for the UI
+- [ ] do have the hand attachment style option
+- [ ] voice range sphere maybe a little brighter, or use something other than normal alpha blending to make it more visible on bright surfaces
+- [ ] think about attaching and theft
+- [x] make a keyboard icon for items page search expand collapse button
+- [ ] look for fonts, maybe there's something good, look at the one Ames shared
+- [x] remove right stick up down movement
+- [x] add info about holding jump (or shift) to speed up in no clip
+- [x] fix some UI sounds being delayed. The sound files themselves start with (near) silence
+- [x] change summon indicators to expand radius before forming a full circle already, very most likely feels nicer that way
+- [ ] maybe add sliders as settings to move the hud, one for vertical one for horizontal
+- [x] when creating the world, `SortableScrollableList`s do not initialize properly and never end up showing any entries, though the size is set correctly. Worked around by rejoining - the menu's is open state was false due to requesting a GM, however the menu open close input handler ignored that event and kept the menu open. The lists thought the menu was closed though
+- [x] sometimes list end up not showing any entries until you start scrolling after switching to a page. This is separate to the issue above, as in said case they do not populate even when scrolling - same issue as above
+- [ ] maybe make strafe slower, like half to quarter speed
+- [ ] maybe make strafe always move you on the y plane, rather than relative to the head
+- [x] through some mysterious means the timer on a gm request just stopped updating. Switching pages did not cause it to start again - same issue as that one `SortableScrollableList` above, the menu system was at fault
+- [x] make dynamic data add and overwrite headers clear headers
+- [ ] hud positioning is also affected by order of operations while no clipping, just like how the menu jitters
+- [x] custom location add input field should say Custom Location Name, not Selection Group Name
+- [ ] fix permissions for item sizes, small and large item permissions are outdated
+- [x] add more space between gm proxies and no clip modules to make it a clearer separation
+- [x] add "minutes" to autosave interval label
+- [ ] maybe add location zones, another column alternative to proximity
+- [ ] add tooltip when hovering save as global stating how setting the name is required in order to save as global dynamic data
+- [x] use max work ms per frame from lockstep API
+- [ ] experiment with changing the voice range sphere to actually be a ring on the ground. But not actually a ring, rather a similar approach to right now, but as a cylinder rather than sphere, where said cylinder is only visible on the ground level. Similar to Lucio's aura effect in overwatch
