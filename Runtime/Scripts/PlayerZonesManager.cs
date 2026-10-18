@@ -10,10 +10,19 @@ namespace JanSharp.Internal
     [CustomRaisedEventsDispatcher(typeof(PlayerZonesManagerEventAttribute), typeof(PlayerZonesManagerEventType))]
     public class PlayerZonesManager : PlayerZonesManagerAPI
     {
+#if UNITY_EDITOR && !COMPILER_UDONSHARP
+        public const string AutoZonesLayerPropName = nameof(autoZonesLayer);
+        public const string ZonesLayerIndexPropName = nameof(zonesLayerIndex);
+        public bool AutoZonesLayerIndex => autoZonesLayer;
+        public int ZonesLayerIndex => zonesLayerIndex;
+#endif
+
         [HideInInspector][FindInScene] public PlayerZone[] allZones;
         public PlayerZonesSyncing zonesSyncing;
 
-        [SerializeField] private LayerMask zonesLayer;
+        [SerializeField] private bool autoZonesLayer = true;
+        [SerializeField] private int zonesLayerIndex;
+        private int zonesLayerMask;
         private const float HeadCheckRadius = 0.2f;
 
         private VRCPlayerApi localPlayerAPI;
@@ -37,6 +46,7 @@ namespace JanSharp.Internal
             flipBuffer = new PlayerZone[allZonesCount];
             isInZoneFieldName = nameof(PlayerZone.localPlayerIsInZone);
             isInZoneFlipFieldName = nameof(PlayerZone.localPlayerIsInZoneFlip);
+            zonesLayerMask = 1 << zonesLayerIndex;
 
             BuildZoneIndexesByTransformDictionary();
         }
@@ -61,7 +71,7 @@ namespace JanSharp.Internal
         private void Update()
         {
             Vector3 headPosition = localPlayerAPI.GetTrackingData(VRCPlayerApi.TrackingDataType.Head).position;
-            int hitCount = Physics.OverlapSphereNonAlloc(headPosition, HeadCheckRadius, hitColliders, zonesLayer, QueryTriggerInteraction.Collide);
+            int hitCount = Physics.OverlapSphereNonAlloc(headPosition, HeadCheckRadius, hitColliders, zonesLayerMask, QueryTriggerInteraction.Collide);
             for (int i = 0; i < hitCount; i++)
             {
                 Collider collider = hitColliders[i];

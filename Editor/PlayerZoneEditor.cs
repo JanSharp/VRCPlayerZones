@@ -15,12 +15,21 @@ namespace JanSharp.Internal
         private static void OnAssemblyLoad()
         {
             OnBuildUtil.RegisterTypeCumulative<PlayerZone>(OnBuild, order: -10);
+            OnBuildUtil.RegisterTypeCumulative<PlayerZoneExpansion>(OnExpansionBuild, order: -10);
+        }
+
+        private static bool OnExpansionBuild(IEnumerable<PlayerZoneExpansion> expansions)
+        {
+            PlayerZonesManagerOnBuild.SetPlayerZonesLayerAndApply(expansions.Select(z => z.gameObject).ToArray());
+            return true;
         }
 
         private static bool OnBuild(IEnumerable<PlayerZone> zones)
         {
             if (!ValidateNoNesting(zones))
                 return false;
+
+            PlayerZonesManagerOnBuild.SetPlayerZonesLayerAndApply(zones.Select(z => z.gameObject).ToArray());
 
             List<PlayerZone> syncedZones = new();
             List<PlayerZone> localZones = new();

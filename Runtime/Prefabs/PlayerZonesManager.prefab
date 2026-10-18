@@ -57,9 +57,8 @@ MonoBehaviour:
   _udonSharpBackingUdonBehaviour: {fileID: 1531957890802685079}
   allZones: []
   zonesSyncing: {fileID: 0}
-  zonesLayer:
-    serializedVersion: 2
-    m_Bits: 0
+  autoZonesLayer: 1
+  zonesLayerIndex: 0
 --- !u!114 &1531957890802685079
 MonoBehaviour:
   m_ObjectHideFlags: 0
