@@ -21,9 +21,30 @@ namespace JanSharp.Internal
         private int zonesPlayerDataIndex;
         private PlayerZonesPlayerData localPlayer;
 
+        private int suspendedIndexInArray = 0;
+        private System.Diagnostics.Stopwatch suspensionSw = new System.Diagnostics.Stopwatch();
+        private double maxWorkMSPerFrame;
+
         private void Start()
         {
             zonesManager = (PlayerZonesManager)zonesManagerAPI;
+            maxWorkMSPerFrame = lockstep.MaxWorkMSPerFrame;
+        }
+
+        [LockstepEvent(LockstepEventType.OnMaxWorkMSPerFrameChanged)]
+        public void OnMaxWorkMSPerFrameChanged()
+        {
+            maxWorkMSPerFrame = lockstep.MaxWorkMSPerFrame;
+        }
+
+        private bool LogicIsRunningLong()
+        {
+            if (suspensionSw.Elapsed.TotalMilliseconds > maxWorkMSPerFrame)
+            {
+                lockstep.FlagToContinueNextFrame();
+                return true;
+            }
+            return false;
         }
 
         [PlayerDataEvent(PlayerDataEventType.OnRegisterCustomPlayerData)]
@@ -55,15 +76,21 @@ namespace JanSharp.Internal
         [LockstepEvent(LockstepEventType.OnClientBeginCatchUp)]
         public void OnClientBeginCatchUp()
         {
-            foreach (PlayerZone zone in zonesManager.allZones)
+            PlayerZone[] allZones = zonesManager.allZones;
+            int allZonesCount = allZones.Length;
+            while (suspendedIndexInArray < allZonesCount)
             {
+                PlayerZone zone = allZones[suspendedIndexInArray++];
                 if (zone == null || !zone.requiresSyncing)
                     continue;
+                if (LogicIsRunningLong())
+                    return;
                 PlayerZonesPlayerData[] playersInZone = zone.playersInZone;
                 int count = zone.playersInZoneCount;
                 for (int i = 0; i < count; i++)
                     zone.RaiseOnPlayerAlreadyInZone(playersInZone[i]);
             }
+            suspendedIndexInArray = 0;
         }
 
         public ulong SendPlayerEnterZoneIA(PlayerZone zone)

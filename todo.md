@@ -7,4 +7,4 @@
   - [ ] do about 4 per second
   - [ ] when moving quickly or teleporting, do more
   - [ ] maybe do one when zones get enabled or disabled
-- [ ] Spread OnClientBeginCatchUp out across frames
+- [x] Spread OnClientBeginCatchUp out across frames
