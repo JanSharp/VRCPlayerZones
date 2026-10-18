@@ -5,6 +5,7 @@ namespace JanSharp.Internal
 {
     [DisallowMultipleComponent]
     [UdonBehaviourSyncMode(BehaviourSyncMode.None)]
+    [SingletonDependency(typeof(PlayerZonesManagerAPI))]
     [CustomRaisedEventsDispatcher(typeof(PlayerZoneEventAttribute), typeof(PlayerZoneEventType), FindListenersInChildrenOnly = true)]
     public class PlayerZone : PlayerZoneAPI
     {
