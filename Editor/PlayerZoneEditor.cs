@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using UdonSharp;
 using UdonSharpEditor;
 using UnityEditor;
 using UnityEngine;
@@ -65,14 +66,56 @@ namespace JanSharp.Internal
     [CustomEditor(typeof(PlayerZone))]
     public class PlayerZoneEditor : Editor
     {
+        private static bool listenersFoldedOut = false;
+        private SerializedProperty requiresSyncingProp;
+
+        private void OnEnable()
+        {
+            requiresSyncingProp = serializedObject.FindProperty(nameof(PlayerZone.requiresSyncing));
+        }
+
         public override void OnInspectorGUI()
         {
             if (UdonSharpGUI.DrawDefaultUdonSharpBehaviourHeader(targets))
                 return;
 
-            serializedObject.Update();
-            DrawPropertiesExcluding(serializedObject, "m_Script");
-            serializedObject.ApplyModifiedProperties();
+            if (GUILayout.Button(new GUIContent("Update Readonly Info Below", "Runs all OnBuild handlers\nInfo for EditorOnly PlayerZones will be empty")))
+                OnBuildUtil.RunOnBuild(showDialogOnFailure: true, useSceneViewNotification: false, abortIfScriptsGotInstantiated: false);
+
+            using (new GUILayout.VerticalScope(EditorStyles.helpBox))
+            using (new EditorGUI.IndentLevelScope())
+            {
+                serializedObject.Update();
+
+                EditorGUI.showMixedValue = requiresSyncingProp.hasMultipleDifferentValues;
+                EditorGUILayout.Toggle(
+                    new GUIContent("Syncs Remote Players", "Enabled whenever any of the listeners listen to remote player zone events"),
+                    requiresSyncingProp.boolValue);
+                EditorGUI.showMixedValue = false;
+
+                if (listenersFoldedOut = EditorGUILayout.Foldout(listenersFoldedOut, "Listeners", toggleOnLabelClick: true))
+                    foreach (UdonSharpBehaviour listener in targets.Cast<PlayerZone>().SelectMany(EnumerateAllListeners).Distinct())
+                        EditorGUILayout.ObjectField(listener, typeof(UdonSharpBehaviour), allowSceneObjects: true);
+            }
+        }
+
+        private static IEnumerable<UdonSharpBehaviour> EnumerateAllListeners(PlayerZone zone)
+        {
+            if (zone.OnLocalPlayerZoneEnterListeners != null)
+                foreach (UdonSharpBehaviour listener in zone.OnLocalPlayerZoneEnterListeners)
+                    yield return listener;
+            if (zone.OnLocalPlayerZoneExitListeners != null)
+                foreach (UdonSharpBehaviour listener in zone.OnLocalPlayerZoneExitListeners)
+                    yield return listener;
+            if (zone.OnPlayerZoneEnterListeners != null)
+                foreach (UdonSharpBehaviour listener in zone.OnPlayerZoneEnterListeners)
+                    yield return listener;
+            if (zone.OnPlayerZoneExitListeners != null)
+                foreach (UdonSharpBehaviour listener in zone.OnPlayerZoneExitListeners)
+                    yield return listener;
+            if (zone.OnPlayerAlreadyInZoneListeners != null)
+                foreach (UdonSharpBehaviour listener in zone.OnPlayerAlreadyInZoneListeners)
+                    yield return listener;
         }
     }
 }
