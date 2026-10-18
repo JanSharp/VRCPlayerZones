@@ -25,6 +25,13 @@ namespace JanSharp.Internal
         private int zonesLayerMask;
         private const float HeadCheckRadius = 0.2f;
 
+        private Vector3 pervHeadPosition;
+        private float nextCheckTime;
+        private const float MaxCheckInterval = 0.2f;
+        // Keeping it notably smaller than the diameter to keep the chance very high that the previous and current
+        // checks overlap even when moving quickly, to avoid phasing through thin colliders without it getting detected.
+        private const float MinMovementForAnotherCheck = HeadCheckRadius * 1.25f;
+
         private VRCPlayerApi localPlayerAPI;
 
         private Collider[] hitColliders = new Collider[64];
@@ -40,6 +47,7 @@ namespace JanSharp.Internal
         private void Start()
         {
             localPlayerAPI = Networking.LocalPlayer;
+            nextCheckTime = Time.time;
 
             int allZonesCount = allZones.Length;
             activeZones = new PlayerZone[allZonesCount];
@@ -71,6 +79,16 @@ namespace JanSharp.Internal
         private void Update()
         {
             Vector3 headPosition = localPlayerAPI.GetTrackingData(VRCPlayerApi.TrackingDataType.Head).position;
+            float time = Time.time;
+            if (time < nextCheckTime && Vector3.Distance(pervHeadPosition, headPosition) < MinMovementForAnotherCheck)
+                return;
+            nextCheckTime = time + MaxCheckInterval;
+            pervHeadPosition = headPosition;
+            CheckForZones(headPosition);
+        }
+
+        private void CheckForZones(Vector3 headPosition)
+        {
             int hitCount = Physics.OverlapSphereNonAlloc(headPosition, HeadCheckRadius, hitColliders, zonesLayerMask, QueryTriggerInteraction.Collide);
             for (int i = 0; i < hitCount; i++)
             {
