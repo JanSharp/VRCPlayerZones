@@ -15,10 +15,11 @@ namespace JanSharp.Internal
         public const string ZonesLayerIndexPropName = nameof(zonesLayerIndex);
         public bool AutoZonesLayerIndex => autoZonesLayer;
         public int ZonesLayerIndex => zonesLayerIndex;
+        public PlayerZonesSyncing ZonesSyncing => zonesSyncing;
 #endif
 
         [HideInInspector][FindInScene] public PlayerZone[] allZones;
-        public PlayerZonesSyncing zonesSyncing;
+        [HideInInspector][SerializeField][SingletonReference(Optional = true)] private PlayerZonesSyncing zonesSyncing;
 
         [SerializeField] private bool autoZonesLayer = true;
         [SerializeField] private int zonesLayerIndex;

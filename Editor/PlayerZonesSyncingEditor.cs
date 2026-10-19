@@ -26,19 +26,12 @@ namespace JanSharp.Internal
             if (PlayerZoneOnBuild.AtLeastOneZoneRequiresSyncing)
                 EnsureHasSyncingScript(manager);
             else
-                EnsureNoSyncingScript(manager);
+                EnsureNoSyncingScript();
             return true;
         }
 
         private static void EnsureHasSyncingScript(PlayerZonesManager manager)
         {
-            if (manager.zonesSyncing != null)
-            {
-                if (manager.zonesSyncing != zonesSyncing) // In case it is referencing an EditorOnly instance for whichever reason.
-                    SetZonesSyncingRef(manager, zonesSyncing);
-                return;
-            }
-
             if (zonesSyncing == null)
             {
                 SingletonScriptEditor.EnsureSingletonExists<PlayerZonesSyncing>(); // Triggers a rerun.
@@ -47,23 +40,13 @@ namespace JanSharp.Internal
 
             if (zonesSyncing.transform.parent != manager.transform)
                 Undo.SetTransformParent(zonesSyncing.transform, manager.transform, $"Make {nameof(PlayerZonesSyncing)} a child of the manager");
-
-            SetZonesSyncingRef(manager, zonesSyncing);
         }
 
-        private static void EnsureNoSyncingScript(PlayerZonesManager manager)
+        private static void EnsureNoSyncingScript()
         {
             if (zonesSyncing == null)
                 return;
             OnBuildUtil.UndoDestroyObjectImmediate(zonesSyncing.gameObject);
-            SetZonesSyncingRef(manager, null); // For cleanliness, make it not a "missing" reference.
-        }
-
-        private static void SetZonesSyncingRef(PlayerZonesManager manager, PlayerZonesSyncing zonesSyncing)
-        {
-            SerializedObject so = new(manager);
-            so.FindProperty(nameof(PlayerZonesManager.zonesSyncing)).objectReferenceValue = zonesSyncing;
-            so.ApplyModifiedProperties();
         }
     }
 }
