@@ -75,6 +75,7 @@ namespace JanSharp.Internal
     [CustomEditor(typeof(PlayerZone))]
     public class PlayerZoneEditor : Editor
     {
+        private static bool expansionsFoldedOut = false;
         private static bool listenersFoldedOut = false;
         private SerializedProperty requiresSyncingProp;
 
@@ -96,15 +97,36 @@ namespace JanSharp.Internal
             {
                 serializedObject.Update();
 
+                using (new GUILayout.VerticalScope(EditorStyles.helpBox))
+                    GUILayout.Label("Zone Expansions, Listeners and Syncing are determined based on "
+                        + "scripts on this object and its children.", EditorStyles.wordWrappedLabel);
+
                 EditorGUI.showMixedValue = requiresSyncingProp.hasMultipleDifferentValues;
                 EditorGUILayout.Toggle(
                     new GUIContent("Syncs Remote Players", "Enabled whenever any of the listeners listen to remote player zone events"),
                     requiresSyncingProp.boolValue);
                 EditorGUI.showMixedValue = false;
 
-                if (listenersFoldedOut = EditorGUILayout.Foldout(listenersFoldedOut, "Listeners", toggleOnLabelClick: true))
-                    foreach (UdonSharpBehaviour listener in targets.Cast<PlayerZone>().SelectMany(EnumerateAllListeners).Distinct())
-                        EditorGUILayout.ObjectField(listener, typeof(UdonSharpBehaviour), allowSceneObjects: true);
+                DrawObjectFieldList(ref expansionsFoldedOut, "Zone Expansions",
+                    () => targets.Cast<PlayerZone>().Where(z => z.Expansions != null).SelectMany(z => z.Expansions).Distinct());
+                DrawObjectFieldList(ref listenersFoldedOut, "Listeners",
+                    () => targets.Cast<PlayerZone>().SelectMany(EnumerateAllListeners).Distinct());
+            }
+        }
+
+        private static void DrawObjectFieldList<T>(ref bool foldedOut, string label, System.Func<IEnumerable<T>> getObjects)
+            where T : Object
+        {
+            if (foldedOut = EditorGUILayout.Foldout(foldedOut, label, toggleOnLabelClick: true))
+            {
+                bool any = false;
+                foreach (T obj in getObjects())
+                {
+                    EditorGUILayout.ObjectField(obj, typeof(T), allowSceneObjects: true);
+                    any = true;
+                }
+                if (!any)
+                    GUILayout.Label("None");
             }
         }
 

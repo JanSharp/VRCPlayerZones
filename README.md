@@ -5,6 +5,8 @@ A reliable zone system for scripts to detect local and or remote players within 
 
 Areas are defined using trigger colliders, however the local player detects which zones they are in using physics overlap checks rather than trigger enter and exit events. This makes the system reliable. For remote players, when a script requires knowing about them, which zones players are in is synced through lockstep networking.
 
+Player Zones and their colliders can be toggled at runtime, and if a player is inside of said zone an enter or exit event will get raised respectively.
+
 # Installing
 
 (It's not actually published as a package yet, but once it is the following applies.)

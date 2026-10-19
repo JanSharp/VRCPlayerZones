@@ -8,6 +8,13 @@
   - [x] when moving quickly or teleporting, do more
   - [ ] maybe do one when zones get enabled or disabled
 - [x] Spread OnClientBeginCatchUp out across frames
+- [ ] explain expansions in their inspector
+- [x] list expansions in the zone inspector too
+- [ ] add usage documentation to the readme
+- [ ] explain PlayerZoneTriggerEventsLocal and LocalAndRemote in their inspector
+- [x] add an on build error for orphaned player zone listeners
+- [x] test whether VRChat raises on player trigger enter and exit events when a collider is on a layer which does not collide with the local player nor player layers
+  - events do not get raised when the layers do not collide - good!
 
 Performance Notes:
 
