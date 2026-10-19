@@ -8,16 +8,11 @@ namespace JanSharp
     public class PlayerZoneTriggerEventsLocal : UdonSharpBehaviour
     {
         public UdonBehaviour[] targets;
-        private VRCPlayerApi localPlayer;
-
-        private void Start()
-        {
-            localPlayer = Networking.LocalPlayer;
-        }
 
         [PlayerZoneEvent(PlayerZoneEventType.OnLocalPlayerZoneEnter)]
         public void OnLocalPlayerZoneEnter()
         {
+            VRCPlayerApi localPlayer = Networking.LocalPlayer;
             foreach (UdonBehaviour target in targets)
                 if (target != null)
                 {
@@ -29,6 +24,7 @@ namespace JanSharp
         [PlayerZoneEvent(PlayerZoneEventType.OnLocalPlayerZoneExit)]
         public void OnLocalPlayerZoneExit()
         {
+            VRCPlayerApi localPlayer = Networking.LocalPlayer;
             foreach (UdonBehaviour target in targets)
                 if (target != null)
                 {

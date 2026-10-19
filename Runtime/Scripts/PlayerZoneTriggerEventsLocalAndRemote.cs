@@ -11,23 +11,17 @@ namespace JanSharp
         [HideInInspector][SerializeField][FindInParent] private PlayerZoneAPI zone;
 
         public UdonBehaviour[] targets;
-        private VRCPlayerApi localPlayer;
-
-        private void Start()
-        {
-            localPlayer = Networking.LocalPlayer;
-        }
 
         [PlayerZoneEvent(PlayerZoneEventType.OnLocalPlayerZoneEnter)]
         public void OnLocalPlayerZoneEnter()
         {
-            RaiseOnPlayerTriggerEnter(localPlayer);
+            RaiseOnPlayerTriggerEnter(Networking.LocalPlayer);
         }
 
         [PlayerZoneEvent(PlayerZoneEventType.OnLocalPlayerZoneExit)]
         public void OnLocalPlayerZoneExit()
         {
-            RaiseOnPlayerTriggerExit(localPlayer);
+            RaiseOnPlayerTriggerExit(Networking.LocalPlayer);
         }
 
         [PlayerZoneEvent(PlayerZoneEventType.OnPlayerZoneEnter)]
