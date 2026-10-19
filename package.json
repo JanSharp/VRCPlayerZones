@@ -13,9 +13,9 @@
   "license": "MIT",
   "vpmDependencies": {
     "com.vrchat.worlds": "^3.7.4",
-    "com.jansharp.common": ">=1.3.0",
+    "com.jansharp.common": ">=1.5.0",
     "com.jansharp.lockstep": ">=1.1.0",
-    "com.jansharp.player-data": ">=0.1.0"
+    "com.jansharp.player-data": ">=1.0.0"
   },
   "url": "https://github.com/JanSharp/VRCPlayerZones/releases/download/v0.1.0/com.jansharp.player-zones.zip",
   "changelogUrl": "https://github.com/JanSharp/VRCPlayerZones/blob/v0.1.0/CHANGELOG.md"
