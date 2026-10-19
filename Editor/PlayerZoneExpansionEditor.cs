@@ -2,7 +2,7 @@ using UdonSharpEditor;
 using UnityEditor;
 using UnityEngine;
 
-namespace JanSharp.Internal
+namespace JanSharp
 {
     [CanEditMultipleObjects]
     [CustomEditor(typeof(PlayerZoneExpansion))]
