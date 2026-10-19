@@ -45,6 +45,12 @@ namespace JanSharp.Internal
 
         private DataDictionary zonesByTransform;
 
+#if PLAYER_ZONES_STOPWATCH
+        [HideInInspector][SerializeField][SingletonReference] private QuickDebugUI qd;
+        private System.Diagnostics.Stopwatch updateSw = new System.Diagnostics.Stopwatch();
+        private object[] updateSwData;
+#endif
+
         private void Start()
         {
             localPlayerAPI = Networking.LocalPlayer;
@@ -58,6 +64,10 @@ namespace JanSharp.Internal
             zonesLayerMask = 1 << zonesLayerIndex;
 
             BuildZoneIndexesByTransformDictionary();
+
+#if PLAYER_ZONES_STOPWATCH
+            updateSwData = StopwatchUtil.CreateDataContainer();
+#endif
         }
 
         private void BuildZoneIndexesByTransformDictionary()
@@ -77,7 +87,21 @@ namespace JanSharp.Internal
             }
         }
 
+#if PLAYER_ZONES_STOPWATCH
         private void Update()
+        {
+            updateSw.Restart();
+            UpdateLogic();
+            updateSw.Stop();
+            qd.ShowForOneFrame(this, "Update MS", StopwatchUtil.FormatAvgMinMax(updateSw, updateSwData));
+        }
+#endif
+
+#if PLAYER_ZONES_STOPWATCH
+        private void UpdateLogic()
+#else
+        private void Update()
+#endif
         {
             Vector3 headPosition = localPlayerAPI.GetTrackingData(VRCPlayerApi.TrackingDataType.Head).position;
             float time = Time.time;
