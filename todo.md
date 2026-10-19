@@ -8,7 +8,7 @@
   - [x] when moving quickly or teleporting, do more
   - [ ] maybe do one when zones get enabled or disabled
 - [x] Spread OnClientBeginCatchUp out across frames
-- [ ] explain expansions in their inspector
+- [x] explain expansions in their inspector
 - [x] list expansions in the zone inspector too
 - [ ] add usage documentation to the readme
 - [ ] explain PlayerZoneTriggerEventsLocal and LocalAndRemote in their inspector
