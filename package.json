@@ -1,7 +1,7 @@
 {
   "name": "com.jansharp.player-zones",
   "version": "1.0.0",
-  "description": "A reliable zone system for scripts to detect local and or remote players within specified areas.",
+  "description": "A reliable zone system for scripts to detect local and or remote players within specified areas. Works with players in stations seamlessly.",
   "displayName": "Player Zones",
   "unity": "2022.3",
   "author": {
