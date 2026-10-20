@@ -14,9 +14,11 @@ namespace JanSharp.Internal
 #endif
 
         [HideInInspector][SerializeField][FindInChildren] private PlayerZoneExpansion[] expansions;
-        public override PlayerZoneExpansion[] Expansions => expansions;
         [HideInInspector] public bool requiresSyncing; // Set through editor scripting.
-        [System.NonSerialized] public int allZonesIndex;
+        [HideInInspector] public int indexInAllZones; // Set through editor scripting.
+        public override PlayerZoneExpansion[] Expansions => expansions;
+        public override bool SyncsRemotePlayers => requiresSyncing;
+        public override int IndexInAllZones => indexInAllZones;
 
         // These 2 variables get used in an alternating fashion each iteration, like flip buffers.
         [System.NonSerialized] public bool localPlayerIsInZone;

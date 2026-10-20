@@ -15,8 +15,8 @@
 - [x] add an on build error for orphaned player zone listeners
 - [x] test whether VRChat raises on player trigger enter and exit events when a collider is on a layer which does not collide with the local player nor player layers
   - events do not get raised when the layers do not collide - good!
-- [ ] expose list of zones the local player is in (latency state) on PlayerZonesManagerAPI
-- [ ] add general "player entered/exited sone/any zone" events
+- [x] expose list of zones the local player is in (latency state) on PlayerZonesManagerAPI
+- [x] ~~add general "player entered/exited sone/any zone" events~~ no, this would then also call for game state equivalents for them, which adds more overhead for every time any player enters or exits any zone, and also introduces the issue that remote player events will only get raised if there is a listener on a zone using those events. This then calls for some way to tell the system that every zone should be synced, and I am not interested in all of these layers of complexity for an otherwise pretty straight forward API so far
 
 Performance Notes:
 

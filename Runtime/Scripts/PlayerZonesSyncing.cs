@@ -65,7 +65,7 @@ namespace JanSharp.Internal
             localPlayer = (PlayerZonesPlayerData)playerDataManager.LocalPlayerData.customPlayerData[zonesPlayerDataIndex];
         }
 
-        [LockstepEvent(LockstepEventType.OnInit)]
+        [LockstepEvent(LockstepEventType.OnInit, Order = -100)]
         public void OnInit()
         {
             int count = zonesManager.activeZonesCount;
@@ -73,7 +73,7 @@ namespace JanSharp.Internal
                 HandlePlayerEnteringZoneInGS(zonesManager.activeZones[i], localPlayer, isInIA: false);
         }
 
-        [LockstepEvent(LockstepEventType.OnClientBeginCatchUp)]
+        [LockstepEvent(LockstepEventType.OnClientBeginCatchUp, Order = -100)]
         public void OnClientBeginCatchUp()
         {
             PlayerZone[] allZones = zonesManager.allZones;
@@ -95,7 +95,7 @@ namespace JanSharp.Internal
 
         public ulong SendPlayerEnterZoneIA(PlayerZone zone)
         {
-            lockstep.WriteSmallUInt((uint)zone.allZonesIndex);
+            lockstep.WriteSmallUInt((uint)zone.indexInAllZones);
             return lockstep.SendInputAction(playerEnterZoneIAId);
         }
 
@@ -119,7 +119,7 @@ namespace JanSharp.Internal
 
         public ulong SendPlayerExitZoneIA(PlayerZone zone)
         {
-            lockstep.WriteSmallUInt((uint)zone.allZonesIndex);
+            lockstep.WriteSmallUInt((uint)zone.indexInAllZones);
             return lockstep.SendInputAction(playerExitZoneIAId);
         }
 

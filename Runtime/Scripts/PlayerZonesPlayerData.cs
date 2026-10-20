@@ -15,8 +15,22 @@ namespace JanSharp
 
         [HideInInspector][SerializeField][SingletonReference] private PlayerZonesManagerAPI zonesManager;
 
+        #region Game State
+        /// <summary>
+        /// <para>Only read up to <see cref="zonesThisPlayerIsInCount"/>, the reset of the elements are
+        /// undefined.</para>
+        /// <para>The used range of elements never contains <see langword="null"/>, as it is invalid to
+        /// destroy synced player zones at runtime.</para>
+        /// <para>Game state safe.</para>
+        /// </summary>
         [System.NonSerialized] public PlayerZoneAPI[] zonesThisPlayerIsIn = new PlayerZoneAPI[ArrList.MinCapacity];
+        /// <summary>
+        /// <para>The amount of zones in <see cref="zonesThisPlayerIsIn"/> the player is currently inside
+        /// of.</para>
+        /// <para>Game state safe.</para>
+        /// </summary>
         [System.NonSerialized] public int zonesThisPlayerIsInCount = 0;
+        #endregion
 
         public override bool PersistPlayerDataWhileOffline() => false;
 
@@ -40,7 +54,7 @@ namespace JanSharp
             // This is the easiest way to do it, and it comes at no constant runtime cost, just late joiner cost.
             lockstep.WriteSmallUInt((uint)zonesThisPlayerIsInCount);
             for (int i = 0; i < zonesThisPlayerIsInCount; i++)
-                lockstep.WriteSmallUInt((uint)((PlayerZone)zonesThisPlayerIsIn[i]).allZonesIndex);
+                lockstep.WriteSmallUInt((uint)((PlayerZone)zonesThisPlayerIsIn[i]).indexInAllZones);
         }
 
         public override void Deserialize(bool isImport, uint importedDataVersion)

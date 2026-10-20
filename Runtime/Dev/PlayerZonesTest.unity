@@ -1508,6 +1508,7 @@ MonoBehaviour:
   expansions:
   - {fileID: 907081903}
   requiresSyncing: 0
+  indexInAllZones: 0
   onLocalPlayerZoneEnterListeners:
   - {fileID: 1772585116}
   onLocalPlayerZoneExitListeners:
@@ -37812,6 +37813,7 @@ MonoBehaviour:
   _udonSharpBackingUdonBehaviour: {fileID: 1870336322}
   expansions: []
   requiresSyncing: 1
+  indexInAllZones: 1
   onLocalPlayerZoneEnterListeners:
   - {fileID: 1027156430}
   onLocalPlayerZoneExitListeners:

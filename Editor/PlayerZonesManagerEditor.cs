@@ -9,7 +9,7 @@ namespace JanSharp.Internal
     {
         public const int TotalUnityLayerCount = 32;
         private const string PlayerZoneLayerName = "PlayerZone";
-        private static int playerZonesLayerIndex;
+        private static int playerZoneLayerIndex;
 
         [OrderedInitializeOnLoad]
         private static void OnAssemblyLoad()
@@ -19,15 +19,35 @@ namespace JanSharp.Internal
 
         private static bool OnBuild(PlayerZonesManager manager)
         {
+            if (!GetOrDeterminePlayerZoneLayerIndex(manager))
+                return false;
+            SetZoneIndexes(manager);
+            return true;
+        }
+
+        private static void SetZoneIndexes(PlayerZonesManager manager)
+        {
+            if (manager.allZones == null)
+                return;
+            for (int i = 0; i < manager.allZones.Length; i++)
+            {
+                SerializedObject so = new(manager.allZones[i]);
+                so.FindProperty(nameof(PlayerZone.indexInAllZones)).intValue = i;
+                so.ApplyModifiedProperties();
+            }
+        }
+
+        private static bool GetOrDeterminePlayerZoneLayerIndex(PlayerZonesManager manager)
+        {
             if (!manager.AutoZonesLayerIndex)
-                playerZonesLayerIndex = manager.ZonesLayerIndex;
+                playerZoneLayerIndex = manager.ZonesLayerIndex;
             else
             {
                 SerializedObject so = new(manager);
                 SerializedProperty zonesLayerIndexProp = so.FindProperty(PlayerZonesManager.ZonesLayerIndexPropName);
                 if (!TryDetermineAndApplyLayer(manager, zonesLayerIndexProp))
                     return false;
-                playerZonesLayerIndex = zonesLayerIndexProp.intValue;
+                playerZoneLayerIndex = zonesLayerIndexProp.intValue;
                 so.ApplyModifiedProperties();
             }
             return true;
@@ -35,13 +55,13 @@ namespace JanSharp.Internal
 
         public static bool TryDetermineAndApplyLayer(PlayerZonesManager manager, SerializedProperty zonesLayerIndexProp)
         {
-            if (!TryDetermineAndSetupLayer(manager, out playerZonesLayerIndex))
+            if (!TryDetermineAndSetupLayer(manager, out playerZoneLayerIndex))
             {
                 Debug.LogError("[PlayerZones] No layer available for the Player Zones system to use automatically."
                     + $"Configure it manually on the {nameof(PlayerZonesManager)}", manager);
                 return false;
             }
-            zonesLayerIndexProp.intValue = playerZonesLayerIndex;
+            zonesLayerIndexProp.intValue = playerZoneLayerIndex;
             return true;
         }
 
@@ -108,15 +128,15 @@ namespace JanSharp.Internal
                 Physics.IgnoreLayerCollision(layerIndex, otherLayer, true); // Modifies project settings.
         }
 
-        public static void SetPlayerZonesLayerAndApply(GameObject go) => SetPlayerZonesLayerAndApply(new SerializedObject(go));
-        public static void SetPlayerZonesLayerAndApply(GameObject[] gos)
+        public static void SetPlayerZoneLayerAndApply(GameObject go) => SetPlayerZoneLayerAndApply(new SerializedObject(go));
+        public static void SetPlayerZoneLayerAndApply(GameObject[] gos)
         {
             if (gos.Length != 0)
-                SetPlayerZonesLayerAndApply(new SerializedObject(gos));
+                SetPlayerZoneLayerAndApply(new SerializedObject(gos));
         }
-        private static void SetPlayerZonesLayerAndApply(SerializedObject gameObjectSo)
+        private static void SetPlayerZoneLayerAndApply(SerializedObject gameObjectSo)
         {
-            gameObjectSo.FindProperty("m_Layer").intValue = playerZonesLayerIndex;
+            gameObjectSo.FindProperty("m_Layer").intValue = playerZoneLayerIndex;
             gameObjectSo.ApplyModifiedProperties();
         }
     }

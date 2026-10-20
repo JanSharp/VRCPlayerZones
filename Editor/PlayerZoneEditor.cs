@@ -20,7 +20,7 @@ namespace JanSharp.Internal
 
         private static bool OnExpansionBuild(IEnumerable<PlayerZoneExpansion> expansions)
         {
-            PlayerZonesManagerOnBuild.SetPlayerZonesLayerAndApply(expansions.Select(z => z.gameObject).ToArray());
+            PlayerZonesManagerOnBuild.SetPlayerZoneLayerAndApply(expansions.Select(z => z.gameObject).ToArray());
             return true;
         }
 
@@ -29,7 +29,7 @@ namespace JanSharp.Internal
             if (!ValidateNoNesting(zones))
                 return false;
 
-            PlayerZonesManagerOnBuild.SetPlayerZonesLayerAndApply(zones.Select(z => z.gameObject).ToArray());
+            PlayerZonesManagerOnBuild.SetPlayerZoneLayerAndApply(zones.Select(z => z.gameObject).ToArray());
 
             List<PlayerZone> syncedZones = new();
             List<PlayerZone> localZones = new();

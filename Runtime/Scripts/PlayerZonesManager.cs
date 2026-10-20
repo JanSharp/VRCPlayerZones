@@ -7,7 +7,6 @@ namespace JanSharp.Internal
 {
     [UdonBehaviourSyncMode(BehaviourSyncMode.None)]
     [DefaultExecutionOrder(10)]
-    [CustomRaisedEventsDispatcher(typeof(PlayerZonesManagerEventAttribute), typeof(PlayerZonesManagerEventType))]
     public class PlayerZonesManager : PlayerZonesManagerAPI
     {
 #if UNITY_EDITOR && !COMPILER_UDONSHARP
@@ -18,8 +17,9 @@ namespace JanSharp.Internal
         public PlayerZonesSyncing ZonesSyncing => zonesSyncing;
 #endif
 
-        [HideInInspector][FindInScene] public PlayerZone[] allZones;
         [HideInInspector][SerializeField][SingletonReference(Optional = true)] private PlayerZonesSyncing zonesSyncing;
+        [HideInInspector][FindInScene] public PlayerZone[] allZones;
+        public override PlayerZoneAPI[] AllZones => allZones;
 
         [SerializeField] private bool autoZonesLayer = true;
         [SerializeField] private int zonesLayerIndex;
@@ -35,13 +35,17 @@ namespace JanSharp.Internal
 
         private VRCPlayerApi localPlayerAPI;
 
-        private Collider[] hitColliders = new Collider[64];
-        [System.NonSerialized] public PlayerZone[] activeZones;
+        private Collider[] hitColliders = new Collider[MaxSimultaneousZones];
+        // Must be set here, not in Start, to make the API never return null.
+        [System.NonSerialized] public PlayerZone[] activeZones = new PlayerZone[MaxSimultaneousZones];
         [System.NonSerialized] public int activeZonesCount = 0;
         private string isInZoneFieldName;
-        private PlayerZone[] flipBuffer;
+        private PlayerZone[] flipBuffer = new PlayerZone[MaxSimultaneousZones];
         private int flipBufferCount = 0;
         private string isInZoneFlipFieldName;
+
+        public override PlayerZoneAPI[] ZonesLocalPlayerIsIn => activeZones;
+        public override int ZonesLocalPlayerIsInCount => activeZonesCount;
 
         private DataDictionary zonesByTransform;
 
@@ -56,9 +60,6 @@ namespace JanSharp.Internal
             localPlayerAPI = Networking.LocalPlayer;
             nextCheckTime = Time.time;
 
-            int allZonesCount = allZones.Length;
-            activeZones = new PlayerZone[allZonesCount];
-            flipBuffer = new PlayerZone[allZonesCount];
             isInZoneFieldName = nameof(PlayerZone.localPlayerIsInZone);
             isInZoneFlipFieldName = nameof(PlayerZone.localPlayerIsInZoneFlip);
             zonesLayerMask = 1 << zonesLayerIndex;
@@ -79,7 +80,6 @@ namespace JanSharp.Internal
                 PlayerZone zone = allZones[i];
                 if (zone == null)
                     continue;
-                zone.allZonesIndex = i;
                 zonesByTransform.SetValue(zone.transform, zone);
                 foreach (PlayerZoneExpansion expansion in zone.Expansions)
                     if (expansion != null)
