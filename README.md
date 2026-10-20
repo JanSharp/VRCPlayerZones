@@ -7,8 +7,6 @@ Works with players in stations seamlessly.
 
 # Installing
 
-(It's not actually published as a package yet, but once it is the following applies.)
-
 Then head to my [VCC Listing](https://jansharp.github.io/vrc/vcclisting.xhtml) and follow the instructions there.
 
 # Usage
