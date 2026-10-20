@@ -22,6 +22,9 @@ namespace JanSharp
             RaiseOnPlayerTriggerExit(Networking.LocalPlayer);
         }
 
+        [PlayerZoneEvent(PlayerZoneEventType.OnPlayerAlreadyInZone)]
+        public void OnPlayerAlreadyInZone() => OnPlayerZoneEnter();
+
         [PlayerZoneEvent(PlayerZoneEventType.OnPlayerZoneEnter)]
         public void OnPlayerZoneEnter()
         {
@@ -32,9 +35,6 @@ namespace JanSharp
             if (playerApi != null)
                 RaiseOnPlayerTriggerEnter(playerApi);
         }
-
-        [PlayerZoneEvent(PlayerZoneEventType.OnPlayerAlreadyInZone)]
-        public void OnPlayerAlreadyInZone() => OnPlayerZoneEnter();
 
         [PlayerZoneEvent(PlayerZoneEventType.OnPlayerZoneExit)]
         public void OnPlayerZoneExit()
