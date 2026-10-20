@@ -10,11 +10,13 @@
 - [x] Spread OnClientBeginCatchUp out across frames
 - [x] explain expansions in their inspector
 - [x] list expansions in the zone inspector too
-- [ ] add usage documentation to the readme
+- [x] add usage documentation to the readme
 - [x] explain PlayerZoneTriggerEventsLocal and LocalAndRemote in their inspector
 - [x] add an on build error for orphaned player zone listeners
 - [x] test whether VRChat raises on player trigger enter and exit events when a collider is on a layer which does not collide with the local player nor player layers
   - events do not get raised when the layers do not collide - good!
+- [ ] expose list of zones the local player is in (latency state) on PlayerZonesManagerAPI
+- [ ] add general "player entered/exited sone/any zone" events
 
 Performance Notes:
 

@@ -3,15 +3,48 @@
 
 A reliable zone system for scripts to detect local and or remote players within specified areas.
 
-Areas are defined using trigger colliders, however the local player detects which zones they are in using physics overlap checks rather than trigger enter and exit events. This makes the system reliable. For remote players, when a script requires knowing about them, which zones players are in is synced through lockstep networking.
-
-Player Zones and their colliders can be toggled at runtime, and if a player is inside of said zone an enter or exit event will get raised respectively.
-
 # Installing
 
 (It's not actually published as a package yet, but once it is the following applies.)
 
 Then head to my [VCC Listing](https://jansharp.github.io/vrc/vcclisting.xhtml) and follow the instructions there.
+
+# Usage
+
+Areas are defined using colliders (triggers or not). The local player detects which zones they are in using physics overlap checks rather than trigger enter and exit events. This makes the system reliable.
+
+For remote players, when a script requires knowing about them, which zones players are in is synced through [lockstep networking](https://github.com/JanSharp/VRCLockstep).
+
+Player Zones and their colliders can be toggled at runtime, and if a player is inside of said zone an enter or exit event will get raised respectively.
+
+When moving from one zone to another without a moment of being outside of both of them in between, the enter event for the new zone is guaranteed to always be raised before the exit event for the previous zone. Even when both happen within the same frame.
+
+## Migrating Existing Worlds
+
+The `PlayerZoneTriggerEventsLocal` and `PlayerZoneTriggerEventsLocalAndRemote` scripts are bridges from `PlayerZone`s to other scripts which were written using VRChat's player trigger enter and exit events.
+
+The Player Zones system, by default, configures a layer which collides with nothing. Which means they also do not collide with local nor remote players. Colliders on this layer will not raise any VRChat nor Unity trigger events.
+
+The `PlayerZone` script will force the object it is on to the layer as defined by the `PlayerZonesManager`.
+
+With all that in mind, in a lot of cases migrating an existing script setup can often be as simple as:
+
+- Add the `PlayerZone` script to the same object
+- Add the `PlayerZoneTriggerEventsLocal` script also to the same object
+  - (or `PlayerZoneTriggerEventsLocalAndRemote` if the script requires remote player events)
+
+And that's it. Only times this does not work are:
+
+- The layer used by the Player Zone system gets changed to ultimately collide with local and or remote players
+  - See `PlayerZonesManager` (which gets created automatically on build or entering play mode)
+  - See ProjectSettings => Physics
+- The third party script which is listening to VRChat's trigger events uses non-none sync mode
+  - In this case the third party script should be moved to a new empty object
+  - Make the `PlayerZoneTriggerEvents-Local/LocalAndRemote` target said new object
+  - Make sure not to break references to a script when putting it on a different object
+    - Use the References Window from [Editor Tools](https://github.com/JanSharp/VRCEditorTools) to help find such incoming references
+- The third party script was written depending on specific behavior and quirks of trigger events, which may be incompatible with actually getting reliable events
+  - Such as the fact that teleporting from one zone to another, the Player Zones system guarantees to get the enter event for the new zone before the exit event of the previous zone, while with VRChat's trigger events I believe it to be the other way around most of the time, but not always
 
 # Contributing
 
