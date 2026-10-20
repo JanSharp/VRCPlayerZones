@@ -1,6 +1,6 @@
 {
   "name": "com.jansharp.player-zones",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A reliable zone system for scripts to detect local and or remote players within specified areas. Works with players in stations seamlessly.",
   "displayName": "Player Zones",
   "unity": "2022.3",
@@ -17,6 +17,6 @@
     "com.jansharp.lockstep": ">=1.1.0",
     "com.jansharp.player-data": ">=1.0.0"
   },
-  "url": "https://github.com/JanSharp/VRCPlayerZones/releases/download/v1.0.0/com.jansharp.player-zones.zip",
-  "changelogUrl": "https://github.com/JanSharp/VRCPlayerZones/blob/v1.0.0/CHANGELOG.md"
+  "url": "https://github.com/JanSharp/VRCPlayerZones/releases/download/v1.0.1/com.jansharp.player-zones.zip",
+  "changelogUrl": "https://github.com/JanSharp/VRCPlayerZones/blob/v1.0.1/CHANGELOG.md"
 }
