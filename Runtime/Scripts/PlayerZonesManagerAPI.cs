@@ -37,5 +37,25 @@ namespace JanSharp
         /// <para>Not game state safe.</para>
         /// </summary>
         public abstract int ZonesLocalPlayerIsInCount { get; }
+
+        /// <summary>
+        /// <para>Write a reference to a zone to the lockstep write stream.</para>
+        /// <para>Retrieve it using <see cref="ReadPlayerZoneRef"/> on the receiving end.</para>
+        /// <para>Cannot be used for exports.</para>
+        /// </summary>
+        /// <param name="zone">Can be <see langword="null"/>.</param>
+        /// <returns></returns>
+        public abstract void WritePlayerZoneRef(PlayerZoneAPI zone);
+        /// <summary>
+        /// <para>Read a reference to a core player data instance from the lockstep read string.</para>
+        /// <para>For zones where <see cref="PlayerZoneAPI.SyncsRemotePlayers"/> is <see langword="true"/>
+        /// this is guaranteed to return non <see langword="null"/>.</para>
+        /// <para>For zones where <see cref="PlayerZoneAPI.SyncsRemotePlayers"/> is <see langword="false"/>
+        /// this can return <see langword="null"/> even when a non <see langword="null"/> value was passed to
+        /// <see cref="WritePlayerZoneRef(PlayerZoneAPI)"/>.</para>
+        /// <para>Cannot be used for imports.</para>
+        /// </summary>
+        /// <returns></returns>
+        public abstract PlayerZoneAPI ReadPlayerZoneRef();
     }
 }

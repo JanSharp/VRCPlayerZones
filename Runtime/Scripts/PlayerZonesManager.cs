@@ -17,6 +17,7 @@ namespace JanSharp.Internal
         public PlayerZonesSyncing ZonesSyncing => zonesSyncing;
 #endif
 
+        [HideInInspector][SerializeField][SingletonReference] private LockstepAPI lockstep;
         [HideInInspector][SerializeField][SingletonReference(Optional = true)] private PlayerZonesSyncing zonesSyncing;
         [HideInInspector][FindInScene] public PlayerZone[] allZones;
         public override PlayerZoneAPI[] AllZones => allZones;
@@ -85,6 +86,19 @@ namespace JanSharp.Internal
                     if (expansion != null)
                         zonesByTransform.SetValue(expansion.transform, zone);
             }
+        }
+
+        public override void WritePlayerZoneRef(PlayerZoneAPI zone)
+        {
+            lockstep.WriteSmallUInt(zone == null
+                ? 0u
+                : (uint)((PlayerZone)zone).indexInAllZones + 1u);
+        }
+
+        public override PlayerZoneAPI ReadPlayerZoneRef()
+        {
+            uint id = lockstep.ReadSmallUInt();
+            return id == 0u ? null : allZones[id - 1u];
         }
 
 #if PLAYER_ZONES_STOPWATCH
