@@ -13,7 +13,9 @@ Then head to my [VCC Listing](https://jansharp.github.io/vrc/vcclisting.xhtml) a
 
 Areas are defined using colliders (triggers or not). The local player detects which zones they are in using physics overlap checks rather than trigger enter and exit events. This makes the system reliable.
 
-Player Zones and their colliders can be toggled at runtime, and if a player is inside of said zone an enter or exit event will get raised respectively.
+`PlayerZone` scripts define one zone, however said zone can be expanded using `PlayerZoneExpansion`s in its children.
+
+Player Zones and their colliders can be toggled at runtime, and if a player is inside of said zone an enter or exit event will get raised respectively. This is not instant however, can take up to 0.2s for the system to react.
 
 When moving from one zone to another without a moment of being outside of both of them in between, the enter event for the new zone is guaranteed to always be raised before the exit event for the previous zone. Even when both happen within the same frame.
 
