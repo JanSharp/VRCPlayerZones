@@ -6,11 +6,9 @@ using VRC.Udon;
 namespace JanSharp
 {
     [UdonBehaviourSyncMode(BehaviourSyncMode.None)]
-    public class PlayerZoneTriggerEventsLocalAndRemote : UdonSharpBehaviour
+    public class PlayerZoneTriggerEventsLocalAndRemote : PlayerZoneTriggerEventsBase
     {
         [HideInInspector][SerializeField][FindInParent] private PlayerZoneAPI zone;
-
-        public UdonBehaviour[] targets;
 
         [PlayerZoneEvent(PlayerZoneEventType.OnLocalPlayerZoneEnter)]
         public void OnLocalPlayerZoneEnter()

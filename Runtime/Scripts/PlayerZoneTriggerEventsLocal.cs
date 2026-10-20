@@ -5,10 +5,8 @@ using VRC.Udon;
 namespace JanSharp
 {
     [UdonBehaviourSyncMode(BehaviourSyncMode.None)]
-    public class PlayerZoneTriggerEventsLocal : UdonSharpBehaviour
+    public class PlayerZoneTriggerEventsLocal : PlayerZoneTriggerEventsBase
     {
-        public UdonBehaviour[] targets;
-
         [PlayerZoneEvent(PlayerZoneEventType.OnLocalPlayerZoneEnter)]
         public void OnLocalPlayerZoneEnter()
         {
